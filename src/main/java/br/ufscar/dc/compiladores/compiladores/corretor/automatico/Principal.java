@@ -46,7 +46,7 @@ public class Principal {
         String tipoTeste = args[5];
 
         if (!tipoTeste.equals("lexico") && !tipoTeste.equals("sintatico")
-                && !tipoTeste.equals("semantico") && !tipoTeste.equals("gerador")
+                && !tipoTeste.equals("semantico") && !tipoTeste.equals("gerador") && !tipoTeste.equals("semanticogerador")
                 && !tipoTeste.equals("tudo") && !tipoTeste.startsWith("gabarito")) {
             System.out.println(
                     "Na opcao tipoTeste, especifique: lexico ou sintatico ou semantico ou gerador ou tudo");
