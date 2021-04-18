@@ -35,7 +35,7 @@ public class Principal {
                     + "<caminho para uma pasta temporaria> "
                     + "<caminho para a pasta com os casos de teste> "
                     + "\"RAs dos alunos do grupo\" "
-                    + "tipoTeste (lexico|sintatico|semantico|gerador|tudo");
+                    + "tipoTeste (lexico|sintatico|semantico|gerador|semanticogerador|tudo");
             System.exit(0);
         }
         String executavel = args[0];
@@ -123,14 +123,14 @@ public class Principal {
             notaCTSintatico = 10.0f * (((float) numCTSintaticoCorretos) / ((float) numCTSintatico));
 
         }
-        if (tipoTeste.equals("tudo") || tipoTeste.equals("semantico")
+        if (tipoTeste.equals("tudo") || tipoTeste.equals("semantico") || tipoTeste.equals("semanticogerador")
                 || tipoTeste.equals("gabarito-semantico")) {
             System.out.println("Corrigindo analisador semantico ...");
             analisaSemanticoComErros(executavel, fSemanticoEntrada, fSemanticoSaida,
                     fPastaDeTrabalho, tipoTeste.equals("gabarito-semantico"));
             notaCTSemantico = 10.0f * (((float) numCTSemanticoCorretos) / ((float) numCTSemantico));
         }
-        if (tipoTeste.equals("tudo") || tipoTeste.equals("gerador")
+        if (tipoTeste.equals("tudo") || tipoTeste.equals("gerador") || tipoTeste.equals("semanticogerador")
                 || tipoTeste.equals("gabarito-gerador")) {
             System.out.println("Corrigindo gerador de codigo ...");
             analisaGeradorDeCodigo(executavel, compiladorGcc, fGeradorEntrada,
