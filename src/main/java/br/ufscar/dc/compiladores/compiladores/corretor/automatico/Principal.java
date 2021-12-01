@@ -1,7 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties. To change this
- * template file, choose Tools | Templates and open the template in the editor.
- */
 package br.ufscar.dc.compiladores.compiladores.corretor.automatico;
 
 import java.io.File;
@@ -19,14 +15,16 @@ import org.apache.commons.io.FileUtils;
  */
 public class Principal {
 
-    static int numCTLexico = 0;
-    static int numCTSintatico = 0;
-    static int numCTSemantico = 0;
-    static int numCTGerador = 0;
-    static int numCTLexicoCorretos = 0;
-    static int numCTSintaticoCorretos = 0;
-    static int numCTSemanticoCorretos = 0;
-    static int numCTGeradorCorretos = 0;
+    static int numCT1 = 0;
+    static int numCT2 = 0;
+    static int numCT3 = 0;
+    static int numCT4 = 0;
+    static int numCT5 = 0;
+    static int numCT1Corretos = 0;
+    static int numCT2Corretos = 0;
+    static int numCT3Corretos = 0;
+    static int numCT4Corretos = 0;
+    static int numCT5Corretos = 0;
 
     public static void main(String[] args) throws Exception {
         if (args.length < 6) {
@@ -35,7 +33,7 @@ public class Principal {
                     + "<caminho para uma pasta temporaria> "
                     + "<caminho para a pasta com os casos de teste> "
                     + "\"RAs dos alunos do grupo\" "
-                    + "tipoTeste (lexico|sintatico|semantico|gerador|semanticogerador|tudo");
+                    + "\"tipoTeste (t1|t2|t3|t4|t5|gabarito, em qualquer combinação)\"");
             System.exit(0);
         }
         String executavel = args[0];
@@ -45,13 +43,7 @@ public class Principal {
         String grupo = args[4];
         String tipoTeste = args[5];
 
-        if (!tipoTeste.equals("lexico") && !tipoTeste.equals("sintatico")
-                && !tipoTeste.equals("semantico") && !tipoTeste.equals("gerador") && !tipoTeste.equals("semanticogerador")
-                && !tipoTeste.equals("tudo") && !tipoTeste.startsWith("gabarito")) {
-            System.out.println(
-                    "Na opcao tipoTeste, especifique: lexico ou sintatico ou semantico ou gerador ou tudo");
-            System.exit(0);
-        }
+        boolean especificouTipoTeste = false;
 
         File fDiretorioCasosDeTeste = new File(diretorioCasosDeTeste);
         if (!fDiretorioCasosDeTeste.isDirectory() || !fDiretorioCasosDeTeste.exists()) {
@@ -67,98 +59,127 @@ public class Principal {
         }
         fPastaDeTrabalho.mkdirs();
 
-        File fLexico = new File(fDiretorioCasosDeTeste, "1.casos_teste_lexico");
-        File fSintatico = new File(fDiretorioCasosDeTeste, "2.casos_teste_sintatico");
-        File fSemantico = new File(fDiretorioCasosDeTeste, "3.casos_teste_semantico");
-        File fGerador = new File(fDiretorioCasosDeTeste, "4.casos_teste_gerador");
-        File fLexicoEntrada = new File(fLexico, "entrada");
-        File fLexicoSaida = new File(fLexico, "saida");
-        File fSintaticoEntrada = new File(fSintatico, "entrada");
-        File fSintaticoSaida = new File(fSintatico, "saida");
-        File fSemanticoEntrada = new File(fSemantico, "entrada");
-        File fSemanticoSaida = new File(fSemantico, "saida");
-        File fGeradorEntrada = new File(fGerador, "1.entrada");
-        File fGeradorEntradaExecucao = new File(fGerador, "3.entrada_execucao");
-        File fGeradorSaida = new File(fGerador, "4.saida");
+        File fT1 = new File(fDiretorioCasosDeTeste, "1.casos_teste_t1");
+        File fT2 = new File(fDiretorioCasosDeTeste, "2.casos_teste_t2");
+        File fT3 = new File(fDiretorioCasosDeTeste, "3.casos_teste_t3");
+        File fT4 = new File(fDiretorioCasosDeTeste, "4.casos_teste_t4");
+        File fT5 = new File(fDiretorioCasosDeTeste, "5.casos_teste_t5");
+        File fT1Entrada = new File(fT1, "entrada");
+        File fT1Saida = new File(fT1, "saida");
+        File fT2Entrada = new File(fT2, "entrada");
+        File fT2Saida = new File(fT2, "saida");
+        File fT3Entrada = new File(fT3, "entrada");
+        File fT3Saida = new File(fT3, "saida");
+        File fT4Entrada = new File(fT4, "entrada");
+        File fT4Saida = new File(fT4, "saida");
+        File fT5Entrada = new File(fT5, "1.entrada");
+        File fT5EntradaExecucao = new File(fT5, "3.entrada_execucao");
+        File fT5Saida = new File(fT5, "4.saida");
 
-        if (!(fLexicoEntrada.exists() && fLexicoEntrada.isDirectory()
-                || fLexicoSaida.exists() && fLexicoSaida.isDirectory()
-                || fSintaticoEntrada.exists() && fSintaticoEntrada.isDirectory()
-                || fSintaticoSaida.exists() && fSintaticoSaida.isDirectory()
-                || fSemanticoEntrada.exists() && fSemanticoEntrada.isDirectory()
-                || fSemanticoSaida.exists() && fSemanticoSaida.isDirectory()
-                || fGeradorEntrada.exists() && fGeradorEntrada.isDirectory()
-                || fGeradorEntradaExecucao.exists() && fGeradorEntradaExecucao.isDirectory()
-                || fGeradorSaida.exists() && fGeradorSaida.isDirectory())) {
+        if (!(fT1Entrada.exists() && fT1Entrada.isDirectory()
+                && fT1Saida.exists() && fT1Saida.isDirectory()
+                && fT2Entrada.exists() && fT2Entrada.isDirectory()
+                && fT2Saida.exists() && fT2Saida.isDirectory()
+                && fT3Entrada.exists() && fT3Entrada.isDirectory()
+                && fT3Saida.exists() && fT3Saida.isDirectory()
+                && fT4Entrada.exists() && fT4Entrada.isDirectory()
+                && fT4Saida.exists() && fT4Saida.isDirectory()
+                && fT5Entrada.exists() && fT5Entrada.isDirectory()
+                && fT5EntradaExecucao.exists() && fT5EntradaExecucao.isDirectory()
+                && fT5Saida.exists() && fT5Saida.isDirectory())) {
             System.out.println("Pasta de casos de testes corrompida. Verifique "
                     + "se as seguintes subpastas estao presentes:");
-            System.out.println(fLexicoEntrada.getAbsolutePath());
-            System.out.println(fLexicoSaida.getAbsolutePath());
-            System.out.println(fSintaticoEntrada.getAbsolutePath());
-            System.out.println(fSintaticoSaida.getAbsolutePath());
-            System.out.println(fSemanticoEntrada.getAbsolutePath());
-            System.out.println(fSemanticoSaida.getAbsolutePath());
-            System.out.println(fGeradorEntrada.getAbsolutePath());
-            System.out.println(fGeradorEntradaExecucao.getAbsolutePath());
-            System.out.println(fGeradorSaida.getAbsolutePath());
+            System.out.println(fT1Entrada.getAbsolutePath());
+            System.out.println(fT1Saida.getAbsolutePath());
+            System.out.println(fT2Entrada.getAbsolutePath());
+            System.out.println(fT2Saida.getAbsolutePath());
+            System.out.println(fT3Entrada.getAbsolutePath());
+            System.out.println(fT3Saida.getAbsolutePath());
+            System.out.println(fT4Entrada.getAbsolutePath());
+            System.out.println(fT4Saida.getAbsolutePath());
+            System.out.println(fT5Entrada.getAbsolutePath());
+            System.out.println(fT5EntradaExecucao.getAbsolutePath());
+            System.out.println(fT5Saida.getAbsolutePath());
             System.exit(0);
+        } else {
+            numCT1 = fT1Entrada.listFiles().length;
+            numCT2 = fT2Entrada.listFiles().length;
+            numCT3 = fT3Entrada.listFiles().length;
+            numCT4 = fT4Entrada.listFiles().length;
+            numCT5 = fT5Entrada.listFiles().length;
         }
 
-        float notaCTLexico = 0;
-        float notaCTSintatico = 0;
-        float notaCTSemantico = 0;
-        float notaCTGerador = 0;
+        float notaCT1 = 0;
+        float notaCT2 = 0;
+        float notaCT3 = 0;
+        float notaCT4 = 0;
+        float notaCT5 = 0;
 
-        if (tipoTeste.equals("lexico") || tipoTeste.equals("gabarito-lexico")) {
-            System.out.println("Corrigindo analisador léxico ...");
-            analisaLexico(executavel, fLexicoEntrada, fLexicoSaida, fPastaDeTrabalho,
-                    tipoTeste.equals("gabarito-lexico"));
-            notaCTLexico = 10.0f * (((float) numCTLexicoCorretos) / ((float) numCTLexico));
+        if (tipoTeste.contains("t1") || tipoTeste.contains("gabarito-t1")) {
+            System.out.println("Corrigindo T1 ...");
+            numCT1Corretos = analisaT1aT4("t1", executavel, fT1Entrada, fT1Saida, fPastaDeTrabalho,
+                    tipoTeste.contains("gabarito-t1"));
+            notaCT1 = 10.0f * (((float) numCT1Corretos) / ((float) numCT1));
+            especificouTipoTeste = true;
         }
-        if (tipoTeste.equals("tudo") || tipoTeste.equals("sintatico")
-                || tipoTeste.equals("gabarito-sintatico")) {
-            System.out.println("Corrigindo analisador sintatico ...");
-            analisaSintatico(executavel, fSintaticoEntrada, fSintaticoSaida, fPastaDeTrabalho,
-                    tipoTeste.equals("gabarito-sintatico"));
-            notaCTSintatico = 10.0f * (((float) numCTSintaticoCorretos) / ((float) numCTSintatico));
+        if (tipoTeste.contains("t2") || tipoTeste.contains("gabarito-t2")) {
+            System.out.println("Corrigindo T2 ...");
+            numCT2Corretos = analisaT1aT4("t2", executavel, fT2Entrada, fT2Saida, fPastaDeTrabalho,
+                    tipoTeste.contains("gabarito-t2"));
+            notaCT2 = 10.0f * (((float) numCT2Corretos) / ((float) numCT2));
+            especificouTipoTeste = true;
+        }
+        if (tipoTeste.contains("t3") || tipoTeste.contains("gabarito-t3")) {
+            System.out.println("Corrigindo T3 ...");
+            numCT3Corretos = analisaT1aT4("t3", executavel, fT3Entrada, fT3Saida, fPastaDeTrabalho,
+                    tipoTeste.contains("gabarito-t3"));
+            notaCT3 = 10.0f * (((float) numCT3Corretos) / ((float) numCT3));
+            especificouTipoTeste = true;
+        }
+        if (tipoTeste.contains("t4") || tipoTeste.contains("gabarito-t4")) {
+            System.out.println("Corrigindo T4 ...");
+            numCT4Corretos = analisaT1aT4("t4", executavel, fT4Entrada, fT4Saida, fPastaDeTrabalho,
+                    tipoTeste.contains("gabarito-t4"));
+            notaCT4 = 10.0f * (((float) numCT4Corretos) / ((float) numCT4));
+            especificouTipoTeste = true;
+        }
+        if (tipoTeste.contains("t5") || tipoTeste.contains("gabarito-t5")) {
+            System.out.println("Corrigindo T5 ...");
+            numCT5Corretos = analisaT5(executavel, compiladorGcc, fT5Entrada, fT5EntradaExecucao, fT5Saida, fPastaDeTrabalho,
+                    tipoTeste.contains("gabarito-t5"));
+            notaCT5 = 10.0f * (((float) numCT5Corretos) / ((float) numCT5));
+            especificouTipoTeste = true;
+        }
 
-        }
-        if (tipoTeste.equals("tudo") || tipoTeste.equals("semantico") || tipoTeste.equals("semanticogerador")
-                || tipoTeste.equals("gabarito-semantico")) {
-            System.out.println("Corrigindo analisador semantico ...");
-            analisaSemanticoComErros(executavel, fSemanticoEntrada, fSemanticoSaida,
-                    fPastaDeTrabalho, tipoTeste.equals("gabarito-semantico"));
-            notaCTSemantico = 10.0f * (((float) numCTSemanticoCorretos) / ((float) numCTSemantico));
-        }
-        if (tipoTeste.equals("tudo") || tipoTeste.equals("gerador") || tipoTeste.equals("semanticogerador")
-                || tipoTeste.equals("gabarito-gerador")) {
-            System.out.println("Corrigindo gerador de codigo ...");
-            analisaGeradorDeCodigo(executavel, compiladorGcc, fGeradorEntrada,
-                    fGeradorEntradaExecucao, fGeradorSaida, fPastaDeTrabalho,
-                    tipoTeste.equals("gabarito-gerador"));
-            notaCTGerador = 10.0f * (((float) numCTGeradorCorretos) / ((float) numCTGerador));
+        if (!especificouTipoTeste) {
+            System.out.println(
+                    "Na opcao tipoTeste, especifique: \"t1 t2 t3\", ou \"t3 t4 t5\" por exemplo");
+            System.exit(0);
         }
 
         System.out.println("\n\n==================================");
         System.out.println("Nota do grupo \"" + grupo + "\":");
 
-        System.out.println("CT Léxico = " + notaCTLexico + " (" + numCTLexicoCorretos + "/"
-                + numCTLexico + ")");
-        System.out.println("CT Sintático = " + notaCTSintatico + " (" + numCTSintaticoCorretos + "/"
-                + numCTSintatico + ")");
-        System.out.println("CT Semântico = " + notaCTSemantico + " (" + numCTSemanticoCorretos + "/"
-                + numCTSemantico + ")");
-        System.out.println("CT Gerador = " + notaCTGerador + " (" + numCTGeradorCorretos + "/"
-                + numCTGerador + ")");
+        System.out.println("CT 1 = " + notaCT1 + " (" + numCT1Corretos + "/"
+                + numCT1 + ")");
+        System.out.println("CT 2 = " + notaCT2 + " (" + numCT2Corretos + "/"
+                + numCT2 + ")");
+        System.out.println("CT 3 = " + notaCT3 + " (" + numCT3Corretos + "/"
+                + numCT3 + ")");
+        System.out.println("CT 4 = " + notaCT4 + " (" + numCT4Corretos + "/"
+                + numCT4 + ")");
+        System.out.println("CT 5 = " + notaCT5 + " (" + numCT5Corretos + "/"
+                + numCT5 + ")");
+
         System.out.println("==================================");
     }
 
-    private static void analisaLexico(String executavel, File entrada, File saida,
+    private static int analisaT1aT4(String tipoTeste, String executavel, File entrada, File saida,
             File pastaDeTrabalho, boolean gerarGabarito) throws IOException {
-        File fSaida1 = new File(pastaDeTrabalho, "saidaLexico");
+        File fSaida1 = new File(pastaDeTrabalho, "saida_"+tipoTeste);
         fSaida1.mkdirs();
         File[] casosDeTeste = entrada.listFiles();
-        numCTLexico = casosDeTeste.length;
+        int numCT = casosDeTeste.length;
         for (File ctEntrada : casosDeTeste) {
             System.out.println("   " + ctEntrada.getName());
             File fSaidaUsuario = new File(fSaida1, ctEntrada.getName());
@@ -174,85 +195,31 @@ public class Principal {
             }
         }
 
+        int ret = 0;
+
         if (gerarGabarito) {
-            numCTLexicoCorretos = numCTLexico;
+            ret = numCT;
             System.out.println("Gerando gabarito");
             FileUtils.copyDirectory(fSaida1, saida);
             System.out.println("Gabarito gerado");
         } else {
             System.out.println("Verificando resultado");
-            numCTLexicoCorretos = compararPastas(saida, fSaida1);
+            ret = compararPastas(saida, fSaida1);
             System.out.println("Resultado verificado");
         }
+
+        return ret;
     }
 
-    private static void analisaSintatico(String executavel, File entrada, File saida,
-            File pastaDeTrabalho, boolean gerarGabarito) throws IOException {
-        File fSaida1 = new File(pastaDeTrabalho, "saidaSintatico");
-        fSaida1.mkdirs();
-        File[] casosDeTeste = entrada.listFiles();
-        numCTSintatico = casosDeTeste.length;
-        for (File ctEntrada : casosDeTeste) {
-            System.out.println("   " + ctEntrada.getName());
-            File fSaidaUsuario = new File(fSaida1, ctEntrada.getName());
-            String cmd = executavel + " " + ctEntrada.getAbsolutePath() + " "
-                    + fSaidaUsuario.getAbsolutePath();
-            System.out.println("Executando: " + cmd);
-            try {
-                Process p = Runtime.getRuntime().exec(cmd);
-                p.waitFor();
-            } catch (IOException | InterruptedException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-
-        if (gerarGabarito) {
-            numCTSintaticoCorretos = numCTSintatico;
-            FileUtils.copyDirectory(fSaida1, saida);
-        } else {
-            numCTSintaticoCorretos = compararPastas(saida, fSaida1);
-        }
-    }
-
-    private static void analisaSemanticoComErros(String executavel, File entrada, File saida,
-            File pastaDeTrabalho, boolean gerarGabarito) throws IOException {
-        File fSaida1 = new File(pastaDeTrabalho, "saidaSemanticoComErros");
-        fSaida1.mkdirs();
-        File[] casosDeTeste = entrada.listFiles();
-        numCTSemantico = casosDeTeste.length;
-        for (File ctEntrada : casosDeTeste) {
-            System.out.println("   " + ctEntrada.getName());
-
-            File fSaidaUsuario = new File(fSaida1, ctEntrada.getName());
-            String cmd = executavel + " " + ctEntrada.getAbsolutePath() + " "
-                    + fSaidaUsuario.getAbsolutePath();
-            System.out.println("Executando: " + cmd);
-            try {
-                Process p = Runtime.getRuntime().exec(cmd);
-                p.waitFor();
-            } catch (IOException | InterruptedException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-
-        if (gerarGabarito) {
-            numCTSemanticoCorretos = numCTSemantico;
-            FileUtils.copyDirectory(fSaida1, saida);
-        } else {
-            numCTSemanticoCorretos = compararPastas(saida, fSaida1);
-        }
-    }
-
-    private static void analisaGeradorDeCodigo(String executavel, String gcc, File entrada,
+    private static int analisaT5(String executavel, String gcc, File entrada,
             File entradaExecucao, File saidaExecucaoCasosDeTeste, File pastaDeTrabalho,
             boolean gerarGabarito) throws IOException, InterruptedException {
         System.out.println("   Gerando codigo...");
-        File fSaida1 = new File(pastaDeTrabalho, "saidaGeradorDeCodigo");
-        File fSaida2 = new File(pastaDeTrabalho, "saidaExecucao");
+        File fSaida1 = new File(pastaDeTrabalho, "saida_t5_GeradorDeCodigo");
+        File fSaida2 = new File(pastaDeTrabalho, "saida_t5_Execucao");
         fSaida1.mkdirs();
         fSaida2.mkdirs();
         File[] casosDeTeste = entrada.listFiles();
-        numCTGerador = casosDeTeste.length;
         for (File ctEntrada : casosDeTeste) {
             System.out.println("   " + ctEntrada.getName());
 
@@ -270,8 +237,7 @@ public class Principal {
         for (File ctEntrada : casosDeTeste) {
             File fGerado = new File(fSaida1, ctEntrada.getName() + ".c");
             File fCompilado = new File(fSaida1, ctEntrada.getName() + ".out");
-            String cmd =
-                    gcc + " " + fGerado.getAbsolutePath() + " -o " + fCompilado.getAbsolutePath();
+            String cmd = gcc + " " + fGerado.getAbsolutePath() + " -o " + fCompilado.getAbsolutePath();
             try {
                 System.out.println(cmd);
                 Process p = Runtime.getRuntime().exec(cmd);
@@ -317,17 +283,20 @@ public class Principal {
 
                 p.waitFor();
             } catch (Exception e) {
-                System.out.println("   Erro ao executar comando ["+cmd+"]: "+e.getMessage());
+                System.out.println("   Erro ao executar comando [" + cmd + "]: " + e.getMessage());
             }
 
         }
 
+        int ret = 0;
         if (gerarGabarito) {
-            numCTGeradorCorretos = numCTGerador;
+            ret = numCT5;
             FileUtils.copyDirectory(fSaida2, saidaExecucaoCasosDeTeste);
         } else {
-            numCTGeradorCorretos = compararPastas(saidaExecucaoCasosDeTeste, fSaida2);
+            ret = compararPastas(saidaExecucaoCasosDeTeste, fSaida2);
         }
+
+        return ret;
     }
 
     private static int compararPastas(File pastaCasosTeste, File pastaAluno) throws IOException {
@@ -367,7 +336,7 @@ public class Principal {
     private static boolean compararArquivos(File fCasoTeste, File fAluno)
             throws FileNotFoundException, IOException {
         try (InputStream i1 = new FileInputStream(fCasoTeste)) {
-            if(!fAluno.exists()) {
+            if (!fAluno.exists()) {
                 return false;
             }
             try (InputStream i2 = new FileInputStream(fAluno)) {
